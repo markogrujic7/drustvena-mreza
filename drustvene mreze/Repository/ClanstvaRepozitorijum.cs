@@ -1,4 +1,4 @@
-﻿namespace drustvene_mreze
+﻿namespace drustvene_mreze.Repository
 {
     public class ClanstvoRepozitorijum
     {

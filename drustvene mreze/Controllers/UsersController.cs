@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using drustvene_mreze.Domen;
+using drustvene_mreze.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace drustvene_mreze.Controllers
 {

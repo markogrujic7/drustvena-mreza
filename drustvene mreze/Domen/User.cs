@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace drustvene_mreze
+namespace drustvene_mreze.Domen
 {
     public class User
     {

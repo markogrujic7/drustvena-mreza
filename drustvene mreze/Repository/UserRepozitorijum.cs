@@ -1,4 +1,6 @@
-﻿namespace drustvene_mreze
+﻿using drustvene_mreze.Domen;
+
+namespace drustvene_mreze.Repository
 {
     public class UserRepozitorijum
     {
