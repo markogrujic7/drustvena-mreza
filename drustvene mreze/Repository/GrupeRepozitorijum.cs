@@ -5,7 +5,6 @@ namespace drustvene_mreze.Repository
 {
     public class GrupeRepozitorijum
     {
-
         private string Putanja = "data/grupe.csv";
 
         public static Dictionary<int, Grupe> Podaci;

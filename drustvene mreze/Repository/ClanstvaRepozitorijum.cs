@@ -4,6 +4,22 @@
     {
         private readonly string filePath = "data/clanstva.csv";
 
+        public void Sacuvaj(List<(int UserId, int GroupId)> clanstva)
+        {
+            var lines = clanstva.Select(clanstvo => $"{clanstvo.UserId},{clanstvo.GroupId}");
+            File.WriteAllLines(filePath, lines);
+        }
+        public void Add(int userId, int groupId)
+        {
+            var lines = new List<string>();
+            if (File.Exists(filePath))
+            {
+                lines.AddRange(File.ReadAllLines(filePath));
+            }
+            lines.Add($"{userId},{groupId}");
+            File.WriteAllLines(filePath, lines);
+        }
+
         public List<(int UserId, int GroupId)> GetAll()
         {
             if (!File.Exists(filePath)) return new List<(int, int)>();

@@ -7,6 +7,7 @@
         public DateTime datumOsnivanja { get; set; }
 
         public Grupe(int id, string naziv, DateTime datumOsnivanja)
+
         {
             this.id = id;
             this.naziv = naziv;

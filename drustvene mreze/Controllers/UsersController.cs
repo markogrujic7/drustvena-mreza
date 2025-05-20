@@ -35,20 +35,6 @@ namespace drustvene_mreze.Controllers
             return NoContent();
         }
 
-        [HttpGet("group/{groupId}")]
-        public IActionResult GetUsersByGroup(int groupId)
-        {
-            var clanstvoRepo = new ClanstvoRepozitorijum();
-            var userRepo = new UserRepozitorijum();
-
-            var userIds = clanstvoRepo.GetUserIdsByGroupId(groupId);
-            var sviKorisnici = userRepo.GetAll();
-
-            var korisniciUGrupi = sviKorisnici.Where(u => userIds.Contains(u.Id)).ToList();
-
-            return Ok(korisniciUGrupi);
-        }
-
     }
 
 }
