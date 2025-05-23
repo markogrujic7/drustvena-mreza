@@ -1,0 +1,17 @@
+@use './styles/global';
+
+#Slika {
+    display: flex;
+    flex-direction: column; // Postavlja elemente u kolonu
+    justify-content: center; // Centriranje elemenata po vertikali
+    align-items: center; // Centriranje elemenata po horizontali
+    h1 {
+        margin-bottom: 10px; // Dodaje razmak ispod naslova
+    }
+
+    img {
+        max-width: 100%; // Ograničava širinu slike
+        width: 25%;   //Menja sirinu slike
+        height: auto; // Zadržava proporcije slike
+    }
+}

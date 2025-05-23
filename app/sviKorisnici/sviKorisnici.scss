@@ -1,0 +1,40 @@
+@use '../styles/global';
+
+
+#container {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: flex-start; 
+    margin: 20px;
+    padding-left: 30px;
+    //Ubacio sam tabelu u isti kontenjer ne treba ovo
+    //width: 50%;
+    gap: 20px; //dodao gap
+
+    caption {
+        margin: 20px;
+        font-weight: bold;
+        border: 1px solid #333;
+        padding: 30px;
+        background-color: #333;
+        color: #f4f4f9;
+    }
+
+    table { 
+        //dodao 2 stila ispod
+        flex: 1;
+        max-width: 50%;
+
+        border: 1px solid black;
+        padding: 10px;
+        
+        th,td{
+            background-color: #333;
+            color: #f4f4f9;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+    }
+}
