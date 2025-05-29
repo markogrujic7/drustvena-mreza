@@ -27,7 +27,7 @@ namespace drustvene_mreze.Repository
                 string[] vrednosti = linija.Split(",");
                 int id = int.Parse(vrednosti[0]);
                 string naziv = vrednosti[1];
-                DateTime datum = DateTime.ParseExact(vrednosti[2], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime datum = DateTime.ParseExact(vrednosti[2], "dd.MM.yyyy", CultureInfo.InvariantCulture);
 
                 Grupe grupa = new Grupe(id, naziv, datum);
                 Podaci[id] = grupa;
@@ -39,7 +39,7 @@ namespace drustvene_mreze.Repository
             List<string> linije = new List<string>();
             foreach (Grupe grupa in Podaci.Values)
             {
-                string linija = $"{grupa.id},{grupa.naziv},{grupa.datumOsnivanja:yyyy-MM-dd}";
+                string linija = $"{grupa.id},{grupa.naziv},{grupa.datumOsnivanja:dd.MM.yyyy}";
                 linije.Add(linija);
             }
             File.WriteAllLines(Putanja, linije);
