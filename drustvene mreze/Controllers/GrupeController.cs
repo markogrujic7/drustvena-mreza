@@ -40,24 +40,43 @@ namespace drustvene_mreze.Controllers
             {
                 return BadRequest("Invalid group data.");
             }
-            GrupeRepozitorijum grupeRepozitorijum = new GrupeRepozitorijum();
-            int noviId = GrupeRepozitorijum.Podaci.Keys.Max() + 1;
-            novaGrupa.id = noviId;
-            GrupeRepozitorijum.Podaci.Add(noviId, novaGrupa);
-            grupeRepozitorijum.Sacuvaj();
-            return Ok(novaGrupa);
+            Grupe grupa = groupDbRepository.Create(novaGrupa);
+
+            return Ok(grupa);
+        }
+
+
+        [HttpPut("{id}")]
+
+        public ActionResult<Grupe> Update(int id, [FromBody] Grupe azuriranaGrupa)
+        {
+            if (azuriranaGrupa == null || string.IsNullOrWhiteSpace(azuriranaGrupa.naziv))
+            {
+                return BadRequest("Invalid group data.");
+            }
+
+            azuriranaGrupa.id = id;
+
+            bool Izvrseno = groupDbRepository.Update(azuriranaGrupa);
+
+            if (!Izvrseno)
+            {
+                return NotFound("Group not found.");
+            }
+
+            return Ok(azuriranaGrupa);
         }
 
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
-            GrupeRepozitorijum grupeRepozitorijum = new GrupeRepozitorijum();
-            if (!GrupeRepozitorijum.Podaci.ContainsKey(id))
+            bool Izvrseno = groupDbRepository.Delete(id);
+
+            if (!Izvrseno)
             {
                 return NotFound("Group not found.");
             }
-            GrupeRepozitorijum.Podaci.Remove(id);
-            grupeRepozitorijum.Sacuvaj();
+
             return NoContent();
         }
 
