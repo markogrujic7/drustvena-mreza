@@ -5,8 +5,12 @@ namespace drustvene_mreze.Repository
 {
     public class GroupDbRepository
     {
-        public GroupDbRepository()
+        private readonly string connectionString;
+
+        public GroupDbRepository(IConfiguration configuration)
         {
+            // Constructor can be used to initialize configuration if needed
+            connectionString = configuration["ConnectionString:SQLiteConnection"];
         }
 
         public List<Grupe> GetAll()
@@ -14,8 +18,7 @@ namespace drustvene_mreze.Repository
             List<Grupe> grupe = new List<Grupe>();
             try
             {
-                string path = "database/database.db";
-                using SqliteConnection connection = new SqliteConnection($"Data Source={path}");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "SELECT * FROM Groups";
@@ -55,9 +58,7 @@ namespace drustvene_mreze.Repository
         {
             try
             {
-
-                string path = "database/database.db";
-                using SqliteConnection connection = new SqliteConnection($"Data Source={path}");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "SELECT * FROM Groups WHERE Id = @Id";
@@ -100,8 +101,7 @@ namespace drustvene_mreze.Repository
         {
             try
             {
-                string path = "database/database.db";
-                using SqliteConnection connection = new SqliteConnection($"Data Source={path}");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "INSERT INTO Groups (Name, CreationDate) VALUES (@Name, @CreationDate); SELECT LAST_INSERT_ROWID();";
@@ -140,7 +140,7 @@ namespace drustvene_mreze.Repository
             try
             {
                 string path = "database/database.db";
-                using SqliteConnection connection = new SqliteConnection($"Data Source={path}");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "UPDATE Groups SET Name = @Column1, CreationDate = @Column2 WHERE Id = @Id";
@@ -181,7 +181,7 @@ namespace drustvene_mreze.Repository
             try
             {
                 string path = "database/database.db";
-                using SqliteConnection connection = new SqliteConnection($"Data Source={path}");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
 

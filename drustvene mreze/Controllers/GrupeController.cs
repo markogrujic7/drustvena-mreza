@@ -10,7 +10,12 @@ namespace drustvene_mreze.Controllers
     [ApiController]
     public class GrupeController : ControllerBase
     {
-        GroupDbRepository groupDbRepository = new GroupDbRepository();
+        GroupDbRepository groupDbRepository;
+
+        public GrupeController(IConfiguration configuration)
+        {
+            groupDbRepository = new GroupDbRepository(configuration);
+        }
 
         [HttpGet]
         public ActionResult<List<Grupe>> GetAll()
