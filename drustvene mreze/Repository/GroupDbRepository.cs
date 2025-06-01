@@ -13,7 +13,7 @@ namespace drustvene_mreze.Repository
             connectionString = configuration["ConnectionString:SQLiteConnection"];
         }
 
-        public List<Grupe> GetAll()
+        public List<Grupe> GetPaged(int page , int pageSize)
         {
             List<Grupe> grupe = new List<Grupe>();
             try
@@ -21,8 +21,11 @@ namespace drustvene_mreze.Repository
                 using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
-                string query = "SELECT * FROM Groups";
+                string query = "SELECT * FROM Groups LIMIT @PageSize OFFSET @Offset";
                 using SqliteCommand command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@PageSize", pageSize); // Example page size
+                command.Parameters.AddWithValue("@Offset", pageSize * (page - 1)); // Example offset for pagination
+
                 using SqliteDataReader reader = command.ExecuteReader();
 
                 while (reader.Read())
@@ -210,6 +213,40 @@ namespace drustvene_mreze.Repository
                 Console.WriteLine($"Neočekivana greška: {ex.Message}");
             }
             return false; // Ensure a value is returned in all code paths
+        }
+
+        public int CountAll()
+        {
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Groups;";
+                using SqliteCommand command = new SqliteCommand(query, connection);
+
+
+                int brojGrupa = Convert.ToInt32(command.ExecuteScalar());
+
+                return brojGrupa;
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"Greška pri konekciji ili izvršavanju neispravnih SQL upita: {ex.Message}");
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Greška u konverziji podataka iz baze: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Konekcija nije otvorena ili je otvorena više puta: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Neočekivana greška: {ex.Message}");
+            }
+            return 0; // Ensure a value is returned in all code paths
         }
     }
 }

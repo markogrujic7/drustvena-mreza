@@ -3,6 +3,7 @@ using drustvene_mreze.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace drustvene_mreze.Controllers
 {
@@ -18,11 +19,31 @@ namespace drustvene_mreze.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Grupe>> GetAll()
+        public ActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            List<Grupe> grupe = groupDbRepository.GetAll();
+            if (page < 1 || pageSize < 1)
+            {
+                return BadRequest("Page and PageSize must be greater than zero.");
+            }
 
-            return Ok(grupe);
+            try { 
+
+                List<Grupe> grupe = groupDbRepository.GetPaged(page, pageSize);
+                int totalCount = groupDbRepository.CountAll();
+
+                Object result = new
+                {
+                    Data = grupe,
+                    TotalCount = totalCount
+                };
+
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return Problem("An error occurred while fetching groups.");
+            }
         }
 
         [HttpGet("{id}")]
