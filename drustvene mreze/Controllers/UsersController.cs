@@ -11,7 +11,7 @@ namespace drustvene_mreze.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserRepozitorijum _repo = new();
-        UserDbRepository usersDbRepository = new UserDbRepository();
+        private readonly UserDbRepository usersDbRepository = new();
 
         [HttpGet]
         public IActionResult GetAll()
@@ -23,7 +23,7 @@ namespace drustvene_mreze.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var user = usersDbRepository.GetById(id);
+            User user = usersDbRepository.GetById(id);
 
             if (user == null)
             {
@@ -35,15 +35,33 @@ namespace drustvene_mreze.Controllers
         [HttpPost]
         public IActionResult Create(User user)
         {
-            _repo.Add(user);
-            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+            User createdUser = usersDbRepository.Create(user);
+            if (createdUser == null)
+                return StatusCode(500, "Greška pri kreiranju korisnika.");
+
+            return Ok(createdUser);
         }
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, User user)
         {
-            if (id != user.Id) return BadRequest();
-            _repo.Update(user);
+            if (id != user.Id)
+                return BadRequest("ID u URL i objektu se ne poklapaju.");
+
+            bool success = usersDbRepository.Update(user);
+            if (!success)
+                return NotFound($"Korisnik sa ID {id} nije pronađen.");
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            bool success = usersDbRepository.Delete(id);
+            if (!success)
+                return NotFound($"Korisnik sa ID {id} nije pronađen ili nije obrisan.");
+
             return NoContent();
         }
 
