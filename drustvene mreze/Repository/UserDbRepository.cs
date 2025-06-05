@@ -8,12 +8,20 @@ namespace drustvene_mreze.Repository
 {
     public class UserDbRepository
     {
+
+        private readonly string connectionString;
+
+        public UserDbRepository(IConfiguration configuration)
+        {
+            connectionString = configuration["ConnectionString:SQLiteConnection"];
+        }
+
         public List<User> GetAll()
         {
             var users = new List<User>();
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/database.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users";
@@ -63,7 +71,7 @@ namespace drustvene_mreze.Repository
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/database.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users WHERE Id = @id";
@@ -108,7 +116,7 @@ namespace drustvene_mreze.Repository
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/database.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = @"
@@ -152,7 +160,7 @@ namespace drustvene_mreze.Repository
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/database.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = @"
@@ -194,7 +202,7 @@ namespace drustvene_mreze.Repository
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/database.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "DELETE FROM Users WHERE Id = @id";

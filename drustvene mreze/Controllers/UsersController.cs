@@ -10,8 +10,12 @@ namespace drustvene_mreze.Controllers
     [Route("api/users")]
     public class UsersController : ControllerBase
     {
-        private readonly UserRepozitorijum _repo = new();
-        private readonly UserDbRepository usersDbRepository = new();
+        UserDbRepository usersDbRepository;
+
+        public UsersController(IConfiguration configuration)
+        {
+            usersDbRepository = new UserDbRepository(configuration);
+        }
 
         [HttpGet]
         public IActionResult GetAll()
