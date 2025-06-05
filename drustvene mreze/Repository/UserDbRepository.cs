@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 using drustvene_mreze.Domen;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.Sqlite;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -16,7 +18,7 @@ namespace drustvene_mreze.Repository
             connectionString = configuration["ConnectionString:SQLiteConnection"];
         }
 
-        public List<User> GetAll()
+        public List<User> GetAll(int page, int pageSize)
         {
             var users = new List<User>();
             try
@@ -24,8 +26,10 @@ namespace drustvene_mreze.Repository
                 using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
-                string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users";
+                string query = @"SELECT Id, Username, Name, Surname, Birthday FROM Users LIMIT @limit OFFSET @offset";
                 using SqliteCommand command = new SqliteCommand(query, connection); // Objekat koji omogućava izvršavanje upita
+                command.Parameters.AddWithValue("@limit", pageSize);
+                command.Parameters.AddWithValue("@offset", (page - 1) * pageSize);
                 using SqliteDataReader reader = command.ExecuteReader(); // Izvršavamo upit i dobijamo rezultat
 
                 while (reader.Read()) // Čitanje rezultata
@@ -232,6 +236,35 @@ namespace drustvene_mreze.Repository
             return false;
         }
 
+        public int CountAll()
+        {
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
 
+                string query = "SELECT COUNT(*) FROM Users";
+                using var command = new SqliteCommand(query, connection);
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"Greška pri konekciji ili izvršavanju SQL upita: {ex.Message}");
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Greška u konverziji podataka iz baze: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Konekcija nije otvorena ili je otvorena više puta: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Neočekivana greška: {ex.Message}");
+            }
+
+            return -1;
+        }
     }
 }

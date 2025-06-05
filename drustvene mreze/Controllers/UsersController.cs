@@ -18,11 +18,32 @@ namespace drustvene_mreze.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var users = usersDbRepository.GetAll();
-            return Ok(users);
+            if (page <= 0 || pageSize <= 0)
+                return BadRequest("Stranica i veličina stranice moraju biti pozitivni brojevi.");
+
+            try
+            {
+                List<User> users = usersDbRepository.GetAll(page, pageSize);
+                int total = usersDbRepository.CountAll();
+
+                var result = new
+                {
+                    Count = total,
+                    Page = page,
+                    PageSize = pageSize,
+                    Users = users
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Greška na serveru: {ex.Message}");
+            }
         }
+
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
