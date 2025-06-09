@@ -31,14 +31,6 @@ namespace drustvene_mreze.Controllers
         [HttpPut("add/{groupId}/{userId}")]
         public IActionResult AddUserToGroup(int groupId, int userId)
         {
-            var userRepo = new UserRepozitorijum();
-            var user = userRepo.GetById(userId);
-
-            if (user == null)
-            {
-               return NotFound("User not found.");
-            }
-
             clanstvoRepozitorijum.Create(userId,groupId);
             return Ok("User added to group successfully.");
         }
@@ -47,21 +39,8 @@ namespace drustvene_mreze.Controllers
 
         public IActionResult RemoveUserFromGroup(int groupId, int userId)
         {
-            var userRepo = new UserRepozitorijum();
-            var user = userRepo.GetById(userId);
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-            var clanstva = clanstvoRepozitorijum.GetAll();
-            var clanstvoZaBrisanje = clanstva.FirstOrDefault(c => c.UserId == userId && c.GroupId == groupId);
-            if (clanstvoZaBrisanje != default)
-            {
-                clanstva.Remove(clanstvoZaBrisanje);
-                clanstvoRepozitorijum.Sacuvaj(clanstva);
-                return Ok("User removed from group successfully.");
-            }
-            return NotFound("Membership not found.");
+            clanstvoRepozitorijum.Remove(userId, groupId);
+            return NoContent();
         }
     }
 }

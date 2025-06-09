@@ -55,6 +55,47 @@ namespace drustvene_mreze.Repository
             }
         }
 
+        public void Remove(int userId, int groupId)
+        {
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = "DELETE FROM GrupeClanstva WHERE IdUser = @IdUser AND IdGrupa = @IdGrupa;";
+                using SqliteCommand command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@IdUser", userId);
+                command.Parameters.AddWithValue("@IdGrupa", groupId);
+
+                int affectedRows = command.ExecuteNonQuery();
+
+                if (affectedRows > 0)
+                {
+                    Console.WriteLine("Članstvo uspešno obrisano!");
+                }
+                else
+                {
+                    Console.WriteLine("Nije obrisano članstvo.");
+                }
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"Greška pri konekciji ili izvršavanju neispravnih SQL upita: {ex.Message}");
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Greška u konverziji podataka iz baze: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Konekcija nije otvorena ili je otvorena više puta: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Neočekivana greška: {ex.Message}");
+            }
+        }
+
         public void Sacuvaj(List<(int UserId, int GroupId)> clanstva)
         {
             var lines = clanstva.Select(clanstvo => $"{clanstvo.UserId},{clanstvo.GroupId}");
