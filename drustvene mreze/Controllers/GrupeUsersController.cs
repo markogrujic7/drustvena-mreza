@@ -8,13 +8,19 @@ namespace drustvene_mreze.Controllers
     [ApiController]
     public class GrupeUsersController : ControllerBase
     {
+        ClanstvoRepozitorijum clanstvoRepozitorijum;
+
+        public GrupeUsersController(IConfiguration configuration)
+        {
+            clanstvoRepozitorijum = new ClanstvoRepozitorijum(configuration);
+        }
+
         [HttpGet("group/{groupId}")]
         public IActionResult GetUsersByGroup(int groupId)
         {
-            var clanstvoRepo = new ClanstvoRepozitorijum();
             var userRepo = new UserRepozitorijum();
 
-            var userIds = clanstvoRepo.GetUserIdsByGroupId(groupId);
+            var userIds = clanstvoRepozitorijum.GetUserIdsByGroupId(groupId);
             var sviKorisnici = userRepo.GetAll();
 
             var korisniciUGrupi = sviKorisnici.Where(u => userIds.Contains(u.Id)).ToList();
@@ -25,7 +31,6 @@ namespace drustvene_mreze.Controllers
         [HttpPut("add/{groupId}/{userId}")]
         public IActionResult AddUserToGroup(int groupId, int userId)
         {
-            var clanstvoRepo = new ClanstvoRepozitorijum();
             var userRepo = new UserRepozitorijum();
             var user = userRepo.GetById(userId);
 
@@ -34,7 +39,7 @@ namespace drustvene_mreze.Controllers
                return NotFound("User not found.");
             }
 
-            clanstvoRepo.Add(userId,groupId);
+            clanstvoRepozitorijum.Create(userId,groupId);
             return Ok("User added to group successfully.");
         }
 
@@ -42,19 +47,18 @@ namespace drustvene_mreze.Controllers
 
         public IActionResult RemoveUserFromGroup(int groupId, int userId)
         {
-            var clanstvoRepo = new ClanstvoRepozitorijum();
             var userRepo = new UserRepozitorijum();
             var user = userRepo.GetById(userId);
             if (user == null)
             {
                 return NotFound("User not found.");
             }
-            var clanstva = clanstvoRepo.GetAll();
+            var clanstva = clanstvoRepozitorijum.GetAll();
             var clanstvoZaBrisanje = clanstva.FirstOrDefault(c => c.UserId == userId && c.GroupId == groupId);
             if (clanstvoZaBrisanje != default)
             {
                 clanstva.Remove(clanstvoZaBrisanje);
-                clanstvoRepo.Sacuvaj(clanstva);
+                clanstvoRepozitorijum.Sacuvaj(clanstva);
                 return Ok("User removed from group successfully.");
             }
             return NotFound("Membership not found.");
