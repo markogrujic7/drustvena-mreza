@@ -61,25 +61,55 @@ namespace drustvene_mreze.Repository
         {
             try
             {
+                Grupe grupa = null;
+                List<User> korisnici = new List<User>();
+
                 using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
-                string query = "SELECT * FROM Groups WHERE Id = @Id";
+                string query = @"
+                    SELECT g.Id, g.Name, g.CreationDate, u.Id as UserId, u.Name, u.Surname, u.Username, u.Birthday
+                    FROM Groups g
+                    LEFT JOIN GrupeClanstva gc ON g.Id = gc.IdGrupa
+                    LEFT JOIN Users u ON gc.IdUser = u.Id
+                    WHERE g.Id = @Id";
                 using SqliteCommand command = new SqliteCommand(query, connection);
+
 
                 command.Parameters.AddWithValue("@Id", id);
                 using SqliteDataReader reader = command.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    int Id = reader.GetInt32(0);
-                    string naziv = reader.GetString(1);
-                    DateTime datumOsnivanja = reader.GetDateTime(2);
-                    Grupe grupa = new Grupe(Id, naziv, datumOsnivanja);
-                    return grupa;
+                    if (grupa == null)
+                    {
+                        int groupId = reader.GetInt32(0);
+                        string naziv = reader.GetString(1);
+                        DateTime datumOsnivanja = reader.GetDateTime(2);
+                        grupa = new Grupe(groupId, naziv, datumOsnivanja);
+                    }
+
+                    if (reader["UserId"] != DBNull.Value)
+                    {
+                        User user = new User
+                        {
+                            Id = reader.GetInt32(3),
+                            Ime = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            Prezime = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            KorisnickoIme = reader.IsDBNull(6) ? null : reader.GetString(6),
+                            DatumRodjenja = reader.IsDBNull(7) ? DateTime.MinValue : reader.GetDateTime(7)
+                        };
+                        korisnici.Add(user);
+                    }
+
+                    if (grupa != null)
+                    {
+                        grupa.clanovi = korisnici;
+                    }
                 }
-                return null; // Dešava se ako ne postoji korisnik sa datim id
+                return grupa;
             }
+
             catch (SqliteException ex)
             {
                 Console.WriteLine($"Greška pri konekciji ili izvršavanju neispravnih SQL upita: {ex.Message}");
