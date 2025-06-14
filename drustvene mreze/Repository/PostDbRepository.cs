@@ -1,5 +1,7 @@
-﻿using drustvene_mreze.Domen;
+﻿using System.Globalization;
+using drustvene_mreze.Domen;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Hosting;
 
 namespace drustvene_mreze.Repository
 {
@@ -41,7 +43,7 @@ namespace drustvene_mreze.Repository
                     {
                         Id = Convert.ToInt32(reader["Id"]),
                         Content = reader["Content"].ToString(),
-                        Date = reader["Date"].ToString(),
+                        Date = DateTime.Parse(reader["Date"].ToString()),
                         UserId = reader.IsDBNull(3) ? null : Convert.ToInt32(reader["UserId"]),
                         UserName = reader.IsDBNull(4) ? "Nepoznat korisnik" : reader["UserName"].ToString()
                     };
@@ -67,6 +69,46 @@ namespace drustvene_mreze.Repository
             }
 
             return posts;
+        }
+
+        public Post Create(Post post)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = @"
+                INSERT INTO Posts (UserId, Content, Date)
+                VALUES (@UserId, @Content, @Date);
+            ";
+
+                using var command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@UserId", post.UserId);
+                command.Parameters.AddWithValue("@Content", post.Content);
+                command.Parameters.AddWithValue("@Date", post.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"Greška pri izvršavanju SQL upita: {ex.Message}");
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Greška u konverziji podataka: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Neispravna konekcija: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Neočekivana greška: {ex.Message}");
+            }
+
+            return post;
         }
     }
 }
