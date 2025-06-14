@@ -50,5 +50,24 @@ namespace drustvene_mreze.Controllers
 
             return Ok(post);
         }
+
+        [HttpDelete("{postId}")]
+        public IActionResult DeletePost(int postId)
+        {
+            Post existingPost = _postRepository.GetById(postId);
+            if (existingPost == null)
+            {
+                return NotFound($"Objava sa ID {postId} ne postoji.");
+            }
+
+            bool deleted = _postRepository.Delete(postId);
+            if (!deleted)
+            {
+                return StatusCode(500, "Došlo je do greške prilikom brisanja objave.");
+            }
+
+            return Ok("Objava je uspešno obrisana.");
+        }
+
     }
 }

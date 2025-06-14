@@ -71,6 +71,38 @@ namespace drustvene_mreze.Repository
             return posts;
         }
 
+        public Post? GetById(int id)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = "SELECT Id, UserId, Content, Date FROM Posts WHERE Id = @Id";
+                using var command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", id);
+
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    return new Post
+                    {
+                        Id = Convert.ToInt32(reader["Id"]),
+                        UserId = Convert.ToInt32(reader["UserId"]),
+                        Content = reader["Content"].ToString(),
+                        Date = Convert.ToDateTime(reader["Date"])
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Greška pri čitanju objave: {ex.Message}");
+            }
+
+            return null;
+        }
+
+
         public Post Create(Post post)
         {
             try
@@ -110,5 +142,29 @@ namespace drustvene_mreze.Repository
 
             return post;
         }
+
+        public bool Delete(int id)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = "DELETE FROM Posts WHERE Id = @Id";
+                using var command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", id);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Greška pri brisanju objave: {ex.Message}");
+                return false;
+            }
+        }
+
+
+
     }
 }
